@@ -1,4 +1,4 @@
-use crate::screening::{ScreeningResult, ScoredCandidate};
+use crate::screening::ScreeningResult;
 use colored::Colorize;
 use comfy_table::{Table, Row, Cell, Color, Attribute};
 

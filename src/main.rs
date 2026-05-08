@@ -6,7 +6,6 @@ mod screening;
 mod server;
 mod telemetry;
 
-use anyhow::Result;
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 use tracing::{info, instrument};

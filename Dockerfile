@@ -1,26 +1,27 @@
-FROM rust:1.76-bookworm AS builder
+FROM rust:latest AS builder
+
+RUN rustup target add x86_64-unknown-linux-musl && \
+    apt-get update && apt-get install -y musl-tools && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
 
 # Cache dependencies layer
 COPY Cargo.toml Cargo.lock* ./
 RUN mkdir src && echo 'fn main() {}' > src/main.rs && \
-    cargo build --release 2>/dev/null; rm -rf src
+    cargo build --release --target x86_64-unknown-linux-musl 2>/dev/null; rm -rf src
 
 COPY src/ ./src/
-RUN touch src/main.rs && cargo build --release
+RUN touch src/main.rs && cargo build --release --target x86_64-unknown-linux-musl
 
-FROM debian:bookworm-slim AS runtime
+FROM alpine:3.21 AS runtime
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN groupadd -r screener && useradd -r -g screener -s /sbin/nologin screener
+RUN apk add --no-cache ca-certificates tzdata && \
+    addgroup -S screener && adduser -S -G screener -s /sbin/nologin screener
 
 WORKDIR /app
 
-COPY --from=builder /build/target/release/candidate-screener /usr/local/bin/candidate-screener
+COPY --from=builder /build/target/x86_64-unknown-linux-musl/release/candidate-screener /usr/local/bin/candidate-screener
 
 RUN mkdir -p /app/config /app/data && chown -R screener:screener /app
 

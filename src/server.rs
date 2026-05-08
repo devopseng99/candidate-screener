@@ -61,12 +61,13 @@ pub async fn launch(config: Config) -> anyhow::Result<()> {
     let figment = rocket::Config::figment()
         .merge(("port", port))
         .merge(("address", host))
-        .merge(("log_level", "warn"));
+        .merge(("log_level", "critical"));
 
     rocket::custom(figment)
         .manage(state)
         .mount("/", routes![health, ready, screen])
         .launch()
         .await
+        .map(|_| ())
         .map_err(|e| anyhow::anyhow!("rocket error: {}", e))
 }
