@@ -1,0 +1,66 @@
+position: "Senior Software Engineer"
+required_skills:
+  - rust
+  - kubernetes
+  - docker
+  - linux
+
+candidates:
+  - name: "Alice Chen"
+    email: "alice@example.com"
+    experience_years: 8
+    skills:
+      - Rust
+      - Kubernetes
+      - Docker
+      - Linux
+      - PostgreSQL
+      - gRPC
+    education: master
+    cultural_fit_score: 0.9
+    notes: "Strong systems background, led infrastructure team"
+
+  - name: "Bob Martinez"
+    email: "bob@example.com"
+    experience_years: 3
+    skills:
+      - Docker
+      - Linux
+      - Python
+      - Go
+    education: bachelor
+    cultural_fit_score: 0.75
+
+  - name: "Carol Smith"
+    email: "carol@example.com"
+    experience_years: 12
+    skills:
+      - Rust
+      - C++
+      - Linux
+      - Kubernetes
+      - Helm
+      - Terraform
+    education: phd
+    cultural_fit_score: 0.8
+
+  - name: "Dave Johnson"
+    email: "dave@example.com"
+    experience_years: 1
+    skills:
+      - Python
+      - JavaScript
+    education: bachelor
+    cultural_fit_score: 0.6
+
+  - name: "Eve Williams"
+    email: "eve@example.com"
+    experience_years: 6
+    skills:
+      - Rust
+      - Docker
+      - Kubernetes
+      - Linux
+      - Redis
+    education: bachelor
+    cultural_fit_score: 0.85

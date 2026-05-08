@@ -1,0 +1,92 @@
+replicaCount: 1
+
+image:
+  repository: candidate-screener
+  tag: latest
+  pullPolicy: Never
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 8080
+
+deployment:
+  enabled: true
+
+job:
+  enabled: false
+  candidatesConfigMap: ""
+  schedule: ""
+
+nodeSelector:
+  kubernetes.io/hostname: mgplcb05
+
+tolerations: []
+
+affinity: {}
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+env:
+  LOG_LEVEL: warn
+  RUST_LOG: warn
+
+config:
+  log_level: warn
+  output:
+    format: table
+    color: true
+  screening:
+    min_score: 0.5
+    top_n: 10
+    weights:
+      experience: 0.25
+      skills: 0.35
+      education: 0.20
+      cultural_fit: 0.20
+  server:
+    port: 8080
+    host: "0.0.0.0"
+  telemetry:
+    enabled: false
+    service_name: candidate-screener
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 30
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: 8080
+  initialDelaySeconds: 3
+  periodSeconds: 10
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 999
+  fsGroup: 999
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL

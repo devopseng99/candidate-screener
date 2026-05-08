@@ -1,0 +1,13 @@
+/target/
+Cargo.lock
+*.env
+.env*
+*.local
+*.pem
+*.key
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
+results*.json
+/tmp/

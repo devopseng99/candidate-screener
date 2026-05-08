@@ -1,0 +1,23 @@
+log_level: warn
+
+output:
+  format: table
+  color: true
+
+screening:
+  min_score: 0.5
+  top_n: 10
+  weights:
+    experience: 0.25
+    skills: 0.35
+    education: 0.20
+    cultural_fit: 0.20
+
+server:
+  port: 8080
+  host: "0.0.0.0"
+
+telemetry:
+  enabled: false
+  service_name: candidate-screener
+  # otlp_endpoint: http://otel-collector:4318

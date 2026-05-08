@@ -1,0 +1,36 @@
+[package]
+name = "candidate-screener"
+version = "0.1.0"
+edition = "2021"
+authors = ["DevOps Engineering"]
+description = "HR candidate screening and ranking CLI"
+
+[[bin]]
+name = "candidate-screener"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.4", features = ["derive", "env", "color"] }
+tokio = { version = "1", features = ["full"] }
+rocket = { version = "0.5", features = ["json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+toml = "0.8"
+colored = "2"
+comfy-table = "7"
+anyhow = "1"
+thiserror = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
+opentelemetry = { version = "0.21", features = ["trace"] }
+opentelemetry_sdk = { version = "0.21", features = ["rt-tokio", "trace"] }
+opentelemetry-otlp = { version = "0.14", features = ["trace", "http-proto", "reqwest-client"] }
+tracing-opentelemetry = "0.22"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4"] }
+
+[profile.release]
+opt-level = 3
+lto = true
+strip = true

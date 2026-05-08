@@ -1,0 +1,122 @@
+{{- if .Values.job.enabled -}}
+{{- if .Values.job.schedule }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "candidate-screener.fullname" . }}-screen
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "candidate-screener.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.job.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "candidate-screener.selectorLabels" . | nindent 12 }}
+        spec:
+          serviceAccountName: {{ include "candidate-screener.serviceAccountName" . }}
+          restartPolicy: Never
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          nodeSelector:
+            {{- toYaml .Values.nodeSelector | nindent 12 }}
+          containers:
+            - name: candidate-screener
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              securityContext:
+                {{- toYaml .Values.securityContext | nindent 16 }}
+              args:
+                - screen
+                - --input
+                - /app/data/candidates.yaml
+                - --format
+                - json
+                - --output
+                - /app/data/results.json
+              env:
+                - name: RUST_LOG
+                  value: {{ .Values.env.RUST_LOG | quote }}
+              volumeMounts:
+                - name: config
+                  mountPath: /app/config
+                  readOnly: true
+                {{- if .Values.job.candidatesConfigMap }}
+                - name: candidates
+                  mountPath: /app/data
+                  readOnly: true
+                {{- end }}
+              resources:
+                {{- toYaml .Values.resources | nindent 16 }}
+          volumes:
+            - name: config
+              configMap:
+                name: {{ include "candidate-screener.fullname" . }}-config
+            {{- if .Values.job.candidatesConfigMap }}
+            - name: candidates
+              configMap:
+                name: {{ .Values.job.candidatesConfigMap }}
+            {{- end }}
+{{- else }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "candidate-screener.fullname" . }}-screen
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "candidate-screener.labels" . | nindent 4 }}
+spec:
+  backoffLimit: 2
+  template:
+    metadata:
+      labels:
+        {{- include "candidate-screener.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "candidate-screener.serviceAccountName" . }}
+      restartPolicy: Never
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      containers:
+        - name: candidate-screener
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          args:
+            - screen
+            - --input
+            - /app/data/candidates.yaml
+            - --format
+            - json
+          env:
+            - name: RUST_LOG
+              value: {{ .Values.env.RUST_LOG | quote }}
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+              readOnly: true
+            {{- if .Values.job.candidatesConfigMap }}
+            - name: candidates
+              mountPath: /app/data
+              readOnly: true
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "candidate-screener.fullname" . }}-config
+        {{- if .Values.job.candidatesConfigMap }}
+        - name: candidates
+          configMap:
+            name: {{ .Values.job.candidatesConfigMap }}
+        {{- end }}
+{{- end }}
+{{- end }}
