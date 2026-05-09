@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: candidate-screener
+  repository: localhost/candidate-screener
   tag: latest
   pullPolicy: Never
 
